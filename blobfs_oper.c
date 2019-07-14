@@ -70,14 +70,12 @@ release:
 }
 
 int blobfs_readdir(struct file *file, struct dir_context *ctx){
-  char* buf;
   blobfs_inode_t* inode_map;
 
-	if (!dir_emit_dots(file, ctx))
-		return 0;
+  if (!dir_emit_dots(file, ctx))
+    return 0;
   if(ctx->pos == ((blobfs_info_t*)(file->f_inode->i_sb->s_fs_info))->inode_count + 1)
     return 0;
-  buf = (char*)kmalloc(sizeof(char) * (DIGEST_LENGTH * 2 + 1), GFP_KERNEL);
   inode_map = file->f_inode->i_sb->s_root->d_inode->i_private;
 
   while(inode_map[ctx->pos - 2].start_block == kStartBlockFree){
@@ -87,11 +85,10 @@ int blobfs_readdir(struct file *file, struct dir_context *ctx){
   }
 
   //digest_string(buf, inode_map[ctx->pos - 2].merkle_root_hash, DIGEST_LENGTH * 2 + 1);
-	dir_emit(ctx, inode_map[ctx->pos - 2].merkle_root_hash, DIGEST_LENGTH, file->f_inode->i_ino, DT_REG);
+  dir_emit(ctx, inode_map[ctx->pos - 2].merkle_root_hash, DIGEST_LENGTH, file->f_inode->i_ino, DT_REG);
   ++(ctx->pos);
 
 release:
-  kfree(buf);
 	return 0;
 }
 
@@ -150,14 +147,6 @@ static struct file_operations blobfs_file_operations = {
   .read = blobfs_file_read,
 	.write = 0x0,
   .iterate = blobfs_readdir,
-};
-
-const struct super_operations blobfs_super_operations = {
-	.statfs      = simple_statfs,
-	.drop_inode = generic_delete_inode,
-	.show_options   = generic_show_options,
-	.destroy_inode = __destroy_inode,
-	.put_super = 0
 };
 
 static struct inode* blobfs_get_inode(struct super_block* sb, struct inode* parent_dir, struct dentry* dentry, umode_t mode){

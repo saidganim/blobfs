@@ -9,15 +9,15 @@ MODULE_LICENSE("GPL");
 
 
 static struct file_system_type blobfs_struct = {
-								.owner = THIS_MODULE,
-								// name of filesystem in kernel table
-								.name = "blobfs",
-								// mounting filesystem
-								.mount = blobfs_mount,
-								// kill_block_super is provided by the kernel
-								.kill_sb = blobfs_kill_sb, //  TODO: Implement own function with releasing resources
-								// blobfs needs disk for work
-								.fs_flags = FS_REQUIRES_DEV,
+	.owner = THIS_MODULE,
+	// name of filesystem in kernel table
+	.name = "blobfs",
+	// mounting filesystem
+	.mount = blobfs_mount,
+	// kill_block_super is provided by the kernel
+	.kill_sb = blobfs_kill_sb, //  TODO: Implement own function with releasing resources
+	// blobfs needs disk for work
+	.fs_flags = FS_REQUIRES_DEV,
 };
 
 
